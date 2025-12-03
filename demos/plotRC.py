@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # match your C++ parameters
 R = 1.0
-C = 1.0
+C = 0.01
 omega = 100.0 * np.pi
 
 # load: time, y0=Uc, y1=t
@@ -36,9 +36,9 @@ ax1.set_title("RC circuit: $U_C(t)$ and $I(t)$")
 # --- Plot 2: phase-style (dUc/dt vs Uc) ---
 dUc_dt = I / C
 plt.figure()
-plt.plot(Uc, dUc_dt, label=r"$\dot U_C$ vs $U_C$")
+plt.plot(Uc, dUc_dt, label=r"$\frac{d}{dt} U_C$ vs $U_C$")
 plt.xlabel(r"$U_C$")
-plt.ylabel(r"$\dot U_C$")
+plt.ylabel(r"$\frac{d}{dt} U_C$")
 plt.title("RC circuit phase plot")
 plt.legend()
 plt.grid(True)

@@ -71,7 +71,7 @@ public:
 int main()
 {
   double R = 1.0;
-  double C = 1.0;
+  double C = 0.01;
 
   double tend = 0.1;
   int steps = 250;
