@@ -37,13 +37,13 @@ public:
 int main()
 {
   double tend = 4*M_PI;
-  int steps = 100;
+  int steps = 1000;
   double tau = tend/steps;
 
   Vector<> y = { 1, 0 };  // initializer list
   auto rhs = std::make_shared<MassSpring>(1.0, 1.0);
   
-  ExplicitEuler stepper(rhs);
+  ImprovedEuler stepper(rhs);
   // ImplicitEuler stepper(rhs);
 
   std::ofstream outfile ("output_test_ode.txt");
