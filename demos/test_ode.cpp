@@ -104,9 +104,35 @@ public:
   void T_evaluate (VectorView<T> x, VectorView<T> f) const
   {
     f(0) = x(1);
-    f(1) = (-m_gravity/m_length)*sin(x(0));
+    f(1) = -m_gravity/m_length*sin(x(0));
   }
 };
+
+
+// int main()
+// {
+//   double tend = 1;
+//   int steps = 250;
+//   double tau = tend/steps;
+
+//   Vector<> y = { 1, 0 };  // initializer list
+//   auto rhs = std::make_shared<PendulumAD>(0.1);
+  
+//   CrankNicolson stepper(rhs);
+
+//   std::ofstream outfile ("output_test_ode.txt");
+//   std::cout << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
+//   outfile << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
+
+//   for (int i = 0; i < steps; i++)
+//   {
+//      stepper.doStep(tau, y);
+
+//      std::cout << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
+//      outfile << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
+//   }
+// }
+
 
 
 int main()
@@ -115,8 +141,8 @@ int main()
   int steps = 250;
   double tau = tend/steps;
 
-  Vector<> y = { 0.1, 0 };  // initializer list
-  auto rhs = std::make_shared<PendulumAD>(1.0);
+  Vector<> y = { 1, 0 };  // initializer list
+  auto rhs = std::make_shared<MassSpring>(1.0, 1.0);
 
 
 
@@ -130,13 +156,13 @@ int main()
  
 
   // ExplicitEuler stepper(rhs);
-   CrankNicolson stepper(rhs);
+// ImplicitEuler stepper(rhs);
 
   // RungeKutta stepper(rhs, Gauss2a, Gauss2b, Gauss2c);
 
   // Gauss3c .. points tabulated, compute a,b:
-//   auto [Gauss3a,Gauss3b] = computeABfromC (Gauss3c);
-//   ImplicitRungeKutta stepper(rhs, Gauss3a, Gauss3b, Gauss3c);
+  auto [Gauss3a,Gauss3b] = computeABfromC (Gauss3c);
+  ExplicitRungeKutta stepper(rhs, Gauss3a, Gauss3b, Gauss3c);
 
 
   /*
@@ -171,4 +197,6 @@ int main()
      std::cout << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
      outfile << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
   }
+
+  return 0;
 }
