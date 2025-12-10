@@ -78,12 +78,6 @@ int main()
   int steps = 250;
   double tau = tend/steps;
 
-<<<<<<< HEAD
-  Vector<> y = { 0, 0 };  // initializer list
-  auto rhs = std::make_shared<RCCircuit>(R, C);
-  
-  ImplicitEuler stepper(rhs);
-=======
   Vector<> y = { 1, 0 };  // initializer list
   auto rhs = std::make_shared<MassSpring>(1.0, 1.0);
 
@@ -100,7 +94,6 @@ int main()
 
   // ExplicitEuler stepper(rhs);
   // ImplicitEuler stepper(rhs);
->>>>>>> upstream/RungeKutta
 
   // RungeKutta stepper(rhs, Gauss2a, Gauss2b, Gauss2c);
 
