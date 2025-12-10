@@ -44,5 +44,20 @@ int main()
 
     // std::cout << "sin(addx) = " << sin(addx) << std::endl;
   }
+
+  // Evaluate and plot Legendre polynomials
+  {
+    static constexpr double STEP = 0.1;
+    std::vector<AutoDiff<1>> P;
+    for (double x = -1.0; x <= 1.0; x += STEP) {
+        AutoDiff<1> dx = Variable<0>(x);
+        LegendrePolynomials(5, dx, P);
+        std::cout << "x = " << x << ": ";
+        for (size_t n = 0; n < P.size(); ++n) {
+            std::cout << "P_" << n << "(x) = " << P[n] << " ";
+        }
+        std::cout << std::endl;
+    }
+  }
   return 0;
 }
