@@ -83,6 +83,42 @@ namespace ASC_ode
     }
   };
 
+  class ExplicitRungeKutta : public TimeStepper 
+  {
+    public:
+    explicit ExplicitRungeKutta(std::shared_ptr<NonlinearFunction> rhs_in)
+      : TimeStepper(std::move(rhs_in)) {}
+    void doStep(double tau, VectorView<double> y) override
+    {
+      size_t n = m_rhs->dimX();
+      Vector<> k1(n), k2(n), k3(n), k4(n);
+      Vector<> ytemp(n);
+      // k1 = f(y_n)
+      m_rhs->evaluate(y, k1);
+
+      // k2 = f(y_n + tau/2 * k1)
+      for (size_t i = 0; i < n; ++i)
+        ytemp(i) = y(i) + 0.5 * tau * k1(i);
+      m_rhs->evaluate(ytemp, k2);
+
+      // k3 = f(y_n + tau/2 * k2)
+      for (size_t i = 0; i < n; ++i)
+        ytemp(i) = y(i) + 0.5 * tau * k2(i);
+      m_rhs->evaluate(ytemp, k3);
+
+      // k4 = f(y_n + tau * k3)
+      for (size_t i = 0; i < n; ++i)
+        ytemp(i) = y(i) + tau * k3(i);
+      m_rhs->evaluate(ytemp, k4);
+
+
+      // y_{n+1} = y_n + tau/6 * (k1 + 2*k2 + 2*k3 + k4)
+      for (size_t i = 0; i < n; ++i)
+        y(i) += (tau / 6.0) * (k1(i) + 2.0 * k2(i) + 2.0 * k3(i) + k4(i));
+    }
+  };
+
+
   class CrankNicolson : public TimeStepper
   {
     std::shared_ptr<NonlinearFunction> m_equ;
