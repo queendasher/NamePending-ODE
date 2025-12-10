@@ -105,6 +105,11 @@ namespace ASC_ode
           result.deriv()[i] = a.deriv()[i] * b.value() + a.value() * b.deriv()[i];
        return result;
    }
+   
+   template <size_t N, typename T = double>
+   auto operator* (T a, const AutoDiff<N, T>& b) { return AutoDiff<N, T>(a) * b; }
+
+
 
     template <size_t N, typename T = double>
     AutoDiff<N, T> operator/ (const AutoDiff<N, T>& a, const AutoDiff<N, T>& b)
