@@ -162,7 +162,7 @@ int main()
 
   // Gauss3c .. points tabulated, compute a,b:
   auto [Gauss3a,Gauss3b] = computeABfromC (Gauss3c);
-  ExplicitRungeKutta stepper(rhs, Gauss3a, Gauss3b, Gauss3c);
+  ImplicitRungeKutta stepper(rhs, Gauss3a, Gauss3b, Gauss3c);
 
 
   /*
