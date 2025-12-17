@@ -1,3 +1,6 @@
+#[submodule "ASC-bla"]
+#	path = ASC-bla
+#	url = https://github.com/TUWien-ASC/ASC-bla.git
 [submodule "nanoblas"]
 	path = nanoblas
 	url = https://github.com/TUWien-ASC/nanoblas.git
