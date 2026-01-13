@@ -51,12 +51,20 @@ public:
   std::array<Connector,2> connectors;
 };
 
+class DistanceConstraint 
+{
+  public: 
+    double distance;
+    std::array<Connector,2> connectors;
+};
+
 template <int D>
 class MassSpringSystem
 {
   std::vector<Fix<D>> m_fixes;
   std::vector<Mass<D>> m_masses;
   std::vector<Spring> m_springs;
+  std::vector<DistanceConstraint> m_distanceConstraints;
   Vec<D> m_gravity=0.0;
 public:
   void setGravity (Vec<D> gravity) { m_gravity = gravity; }
@@ -80,9 +88,16 @@ public:
     return m_springs.size()-1;
   }
 
+  size_t addDistanceConstraint (DistanceConstraint dc)
+  {
+    m_distanceConstraints.push_back(dc);
+    return m_distanceConstraints.size()-1;
+  }
+
   auto & fixes() { return m_fixes; } 
   auto & masses() { return m_masses; } 
   auto & springs() { return m_springs; }
+  auto & distanceConstraints() { return m_distanceConstraints; }
 
   void getState (VectorView<> values, VectorView<> dvalues, VectorView<> ddvalues)
   {
@@ -128,6 +143,12 @@ std::ostream & operator<< (std::ostream & ost, MassSpringSystem<D> & mss)
   for (auto sp : mss.springs())
     ost << "length = " << sp.length << ", stiffness = " << sp.stiffness
         << ", C1 = " << sp.connectors[0] << ", C2 = " << sp.connectors[1] << std::endl;
+
+  ost << "distance constraints: " << std::endl;
+  for (auto dc : mss.distanceConstraints())
+    ost << "distance = " << dc.distance
+        << ", C1 = " << dc.connectors[0] << ", C2 = " << dc.connectors[1] << std::endl;
+
   return ost;
 }
 
@@ -140,41 +161,83 @@ public:
   MSS_Function (MassSpringSystem<D> & _mss)
     : mss(_mss) { }
 
-  virtual size_t dimX() const override { return D*mss.masses().size(); }
-  virtual size_t dimF() const override{ return D*mss.masses().size(); }
+  virtual size_t dimX() const override { return D*mss.masses().size() + mss.distanceConstraints().size(); }
+  virtual size_t dimF() const override{ return D*mss.masses().size() + mss.distanceConstraints().size(); }
 
   virtual void evaluate (VectorView<double> x, VectorView<double> f) const override
   {
     f = 0.0;
 
-    auto xmat = x.asMatrix(mss.masses().size(), D);
-    auto fmat = f.asMatrix(mss.masses().size(), D);
+    const auto n_masses = mss.masses().size();
+    const auto n_distanceConstraints = mss.distanceConstraints().size();
+    auto xmat = x.asMatrix(n_masses, D);
+    auto fmat = f.asMatrix(n_masses, D);
 
-    for (size_t i = 0; i < mss.masses().size(); i++)
+    // Gravity
+    for (size_t i = 0; i < n_masses; ++i)
       fmat.row(i) = mss.masses()[i].mass*mss.getGravity();
 
+    // Springs
     for (auto spring : mss.springs())
-      {
-        auto [c1,c2] = spring.connectors;
-        Vec<D> p1, p2;
-        if (c1.type == Connector::FIX)
+    {
+      auto [c1,c2] = spring.connectors;
+      Vec<D> p1, p2;
+
+      if (c1.type == Connector::FIX)
+        p1 = mss.fixes()[c1.nr].pos;
+      else
+        p1 = xmat.row(c1.nr);
+
+      if (c2.type == Connector::FIX)
+        p2 = mss.fixes()[c2.nr].pos;
+      else
+        p2 = xmat.row(c2.nr);
+
+      double force = spring.stiffness * (norm(p1-p2)-spring.length);
+      Vec<D> dir12 = 1.0/norm(p1-p2) * (p2-p1);
+
+      if (c1.type == Connector::MASS)
+        fmat.row(c1.nr) += force*dir12;
+
+      if (c2.type == Connector::MASS)
+        fmat.row(c2.nr) -= force*dir12;
+    }
+
+    // Distance-Constraints
+    for (size_t c_id = 0; c_id < n_distanceConstraints; ++c_id)
+    {
+      auto& constr = mss.distanceConstraints()[c_id];
+
+      auto [c1, c2] = constr.connectors;
+      Vec<D> p1, p2;
+      if (c1.type == Connector::FIX)
           p1 = mss.fixes()[c1.nr].pos;
-        else
+      else
           p1 = xmat.row(c1.nr);
-        if (c2.type == Connector::FIX)
+
+      if (c2.type == Connector::FIX)
           p2 = mss.fixes()[c2.nr].pos;
-        else
+      else
           p2 = xmat.row(c2.nr);
+          
+      double lambda = x(n_masses*D + c_id);  // Lagrange-Multiplie for this Constraint
 
-        double force = spring.stiffness * (norm(p1-p2)-spring.length);
-        Vec<D> dir12 = 1.0/norm(p1-p2) * (p2-p1);
-        if (c1.type == Connector::MASS)
-          fmat.row(c1.nr) += force*dir12;
-        if (c2.type == Connector::MASS)
-          fmat.row(c2.nr) -= force*dir12;
-      }
+      Vec<D> dir12 = p2 - p1;
 
-    for (size_t i = 0; i < mss.masses().size(); i++)
+      // Force acting on both masses
+      // grad(g) = 2*(p2-p1) bei g = (p2-p1)^2 - L^2 = 0
+      if (c1.type == Connector::MASS)
+          fmat.row(c1.nr) += 2.0 * lambda * dir12;
+      if (c2.type == Connector::MASS)
+          fmat.row(c2.nr) -= 2.0 * lambda * dir12;
+          
+      // Equations for distance constraints (g(x) = (p2-p1)^2 - L^2 = 0)
+      double dist = norm(dir12);
+      f(n_masses*D + c_id) = dist*dist - constr.distance*constr.distance;
+    }
+
+    // Convert forces into accelerations (f=m*a  =>  a=f/m)
+    for (size_t i = 0; i < n_masses; i++)
       fmat.row(i) *= 1.0/mss.masses()[i].mass;
   }
   
