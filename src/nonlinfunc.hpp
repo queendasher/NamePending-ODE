@@ -42,6 +42,33 @@ namespace ASC_ode
   };
 
 
+  // Matrix for working with Constraints: 
+  // I_n for the masses and 0 for the constraints
+  class DAEMassFunction : public NonlinearFunction {
+      size_t n_masses_dof;
+      size_t n_constraints;
+  public:
+      DAEMassFunction(size_t nm, size_t nc) : n_masses_dof(nm), n_constraints(nc) {}
+      
+      virtual size_t dimX() const override { return n_masses_dof + n_constraints; }
+      virtual size_t dimF() const override { return n_masses_dof + n_constraints; }
+      
+      virtual void evaluate(VectorView<double> x, VectorView<double> y) const override {
+          y = 0.0;
+          for (size_t i = 0; i < n_masses_dof; ++i) {
+              y(i) = x(i);
+          }
+      }
+      
+      virtual void evaluateDeriv(VectorView<double> x, MatrixView<double> df) const override {
+          df = 0.0;
+          for (size_t i = 0; i < n_masses_dof; ++i) {
+              df(i, i) = 1.0;
+          }
+      }
+  };
+
+
 
   class ConstantFunction : public NonlinearFunction
   {

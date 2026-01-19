@@ -88,10 +88,19 @@ public:
     return m_springs.size()-1;
   }
 
-  size_t addDistanceConstraint (DistanceConstraint dc)
+  size_t addDistanceConstraint(Connector c1, Connector c2) 
   {
+    Vec<D> p1 = (c1.type == Connector::FIX) ? m_fixes[c1.nr].pos : m_masses[c1.nr].pos;
+    Vec<D> p2 = (c2.type == Connector::FIX) ? m_fixes[c2.nr].pos : m_masses[c2.nr].pos;
+    
+    double current_dist = norm(p1 - p2);
+    
+    DistanceConstraint dc;
+    dc.distance = current_dist;
+    dc.connectors = {c1, c2};
+    
     m_distanceConstraints.push_back(dc);
-    return m_distanceConstraints.size()-1;
+    return m_distanceConstraints.size() - 1;
   }
 
   auto & fixes() { return m_fixes; } 
@@ -183,15 +192,8 @@ public:
       auto [c1,c2] = spring.connectors;
       Vec<D> p1, p2;
 
-      if (c1.type == Connector::FIX)
-        p1 = mss.fixes()[c1.nr].pos;
-      else
-        p1 = xmat.row(c1.nr);
-
-      if (c2.type == Connector::FIX)
-        p2 = mss.fixes()[c2.nr].pos;
-      else
-        p2 = xmat.row(c2.nr);
+      p1 = (c1.type == Connector::FIX) ? mss.fixes()[c1.nr].pos : xmat.row(c1.nr);
+      p2 = (c2.type == Connector::FIX) ? mss.fixes()[c2.nr].pos : xmat.row(c2.nr);
 
       double force = spring.stiffness * (norm(p1-p2)-spring.length);
       Vec<D> dir12 = 1.0/norm(p1-p2) * (p2-p1);
@@ -210,15 +212,9 @@ public:
 
       auto [c1, c2] = constr.connectors;
       Vec<D> p1, p2;
-      if (c1.type == Connector::FIX)
-          p1 = mss.fixes()[c1.nr].pos;
-      else
-          p1 = xmat.row(c1.nr);
 
-      if (c2.type == Connector::FIX)
-          p2 = mss.fixes()[c2.nr].pos;
-      else
-          p2 = xmat.row(c2.nr);
+      p1 = (c1.type == Connector::FIX) ? mss.fixes()[c1.nr].pos : xmat.row(c1.nr);
+      p2 = (c2.type == Connector::FIX) ? mss.fixes()[c2.nr].pos : xmat.row(c2.nr);
           
       double lambda = x(n_masses*D + c_id);  // Lagrange-Multiplie for this Constraint
 

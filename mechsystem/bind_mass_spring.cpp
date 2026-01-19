@@ -106,7 +106,7 @@ PYBIND11_MODULE(mass_spring, m) {
       .def("add", [](MassSpringSystem<3> & mss, Mass<3> m) { return mss.addMass(m); })
       .def("add", [](MassSpringSystem<3> & mss, Fix<3> f) { return mss.addFix(f); })
       .def("add", [](MassSpringSystem<3> & mss, Spring s) { return mss.addSpring(s); })
-      .def("add", [](MassSpringSystem<3> & mss, DistanceConstraint dc) { return mss.addDistanceConstraint(dc); })
+      .def("addConstraint", [](MassSpringSystem<3> & mss, Connector c1, Connector c2) { return mss.addDistanceConstraint(c1, c2); })
       .def_property_readonly("masses", [](MassSpringSystem<3> & mss) -> auto& { return mss.masses(); })
       .def_property_readonly("fixes", [](MassSpringSystem<3> & mss) -> auto& { return mss.fixes(); })
       .def_property_readonly("springs", [](MassSpringSystem<3> & mss) -> auto& { return mss.springs(); })
@@ -154,7 +154,8 @@ PYBIND11_MODULE(mass_spring, m) {
         }
 
         auto mss_func = std::make_shared<MSS_Function<3>> (mss);
-        auto mass = std::make_shared<IdentityFunction> (n_masses3d + n_distanceConstraints);
+        auto mass = std::make_shared<DAEMassFunction> (n_masses3d, n_distanceConstraints);
+
 
         SolveODE_Alpha(tend, steps, 0.8, x, dx, ddx, mss_func, mass);
 
