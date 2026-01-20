@@ -1,7 +1,7 @@
-# ASC-ODE
-A package for solving ordinary differential equations
+# Namepending-ODE
+A package for solving ordinary differential equations.
 
-Read the [documentation](https://tuwien-asc.github.io/ASC-ODE/intro.html)
+Read the [Documentation](https://queendasher.github.io/NamePending-ODE/intro.html)
 
-Find theory behind here: https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html
+The theory behind can be found here: https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html
 
