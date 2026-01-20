@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Welcome to ASC-ODE’s documentation! &#8212; ASC-ODE</title>
+    <title>Introduction to Namepending-ODE &#8212; Introduction to Scientific Computing</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -57,11 +57,10 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mass Spring System" href="mass_spring.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -155,8 +154,8 @@
       
     
     
-    <img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-light" alt="ASC-ODE - Home"/>
-    <script>document.write(`<img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-dark" alt="ASC-ODE - Home"/>`);</script>
+    <img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-light" alt="Introduction to Scientific Computing - Home"/>
+    <script>document.write(`<img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-dark" alt="Introduction to Scientific Computing - Home"/>`);</script>
   
   
 </a></div>
@@ -177,11 +176,14 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1 current active">
                 <a class="reference internal" href="#">
-                    Welcome to ASC-ODE’s documentation!
+                    Introduction to Namepending-ODE
                 </a>
             </li>
         </ul>
-        
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mass_spring.html">Mass Spring System</a></li>
+</ul>
+
     </div>
 </nav></div>
     </div>
@@ -223,7 +225,7 @@
 <div class="article-header-buttons">
 
 
-<a href="https://github.com/JSchoeberl/IntroSC.git" target="_blank"
+<a href="https://github.com/queendasher/NamePending-ODE.git" target="_blank"
    class="btn btn-sm btn-source-repository-button"
    title="Source repository"
    data-bs-placement="bottom" data-bs-toggle="tooltip"
@@ -333,7 +335,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Welcome to ASC-ODE’s documentation!</h1>
+    <h1>Introduction to Namepending-ODE</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -344,7 +346,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-time-stepping-methods-are">Available time-stepping methods are</a></li>
 </ul>
             </nav>
         </div>
@@ -356,58 +357,61 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="welcome-to-asc-ode-s-documentation">
-<h1>Welcome to ASC-ODE’s documentation!<a class="headerlink" href="#welcome-to-asc-ode-s-documentation" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-namepending-ode">
+<h1>Introduction to Namepending-ODE<a class="headerlink" href="#introduction-to-namepending-ode" title="Link to this heading">#</a></h1>
 <p>ASC-ODE is is a C++ library for solving ordinary differential equations (ODEs).
 The equation is defined by the right hand side function.
 ASC-ODE provides various time-steppers which may be used for odes with right hand sides
 given by a function object.</p>
-<p>A small demo for solving a mass-spring model as first order ODE</p>
-<div class="amsmath math notranslate nohighlight">
-\[\begin{eqnarray*}
-y_0^\prime &amp; = &amp; y_1 \\
-y_1^\prime &amp; = &amp; -\frac{k}{m} y_0
-\end{eqnarray*}\]</div>
-<p>is here:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">tend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="o">*</span><span class="n">M_PI</span><span class="p">;</span>
-<span class="kt">int</span><span class="w"> </span><span class="n">steps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
-<span class="kt">double</span><span class="w"> </span><span class="n">tau</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tend</span><span class="o">/</span><span class="n">steps</span><span class="p">;</span>
-
-<span class="n">Vector</span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// initial conditions</span>
-<span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">NonlinearFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">MassSpring</span><span class="o">&gt;</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span><span class="w"> </span><span class="n">stiffness</span><span class="p">);</span>
-<span class="w">  </span>
-<span class="n">ExplicitEuler</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span><span class="n">rhs</span><span class="p">);</span>
-
-<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mf">0.0</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">steps</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">     </span><span class="n">stepper</span><span class="p">.</span><span class="n">DoStep</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
-<span class="w">     </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tau</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>The result of this simulation in phase space is shown here:</p>
-<a class="reference internal image-reference" href="_images/massspring_phase.png"><img alt="_images/massspring_phase.png" class="align-center" src="_images/massspring_phase.png" style="width: 40%;" />
-</a>
+<p>The theory can be found here: <a class="reference external" href="https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html">https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html</a></p>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
-<p>install XXX-odesolver it via git-clone:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/my-github-clone/my-ode-solver.git
+<p>Install Namepending-ODE via git-clone:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/queendasher/NamePending-ODE.git
 </pre></div>
 </div>
-<p>To configure and build some tests do</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd my-ode-solver
-mkdir build
-cd build
-cmake ..
+<p>For the python applications, make sure you have the necessary dependencies installed, such as</p>
+<ul class="simple">
+<li><p>Python 3.12 (or higher)</p></li>
+<li><p>pybind11</p></li>
+<li><p>pythreejs</p></li>
+<li><p>…</p></li>
+</ul>
+<p>They can be installed using apt on Linux:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.12
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3-pybind11
+</pre></div>
+</div>
+<p>To build the library, navigate to the <code class="docutils literal notranslate"><span class="pre">src</span></code> folder and execute the following commands:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>build
+<span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span>
 make
 </pre></div>
 </div>
+<p>After the build is complete, you can run the demonstration scripts. There should be an executable named <code class="docutils literal notranslate"><span class="pre">test_odes</span></code> in the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory.</p>
+<p>To run the demonstration scripts, execute the following command from the <code class="docutils literal notranslate"><span class="pre">build</span></code> directory:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./test_ode
+</pre></div>
+</div>
+<p>This program will print the simulation results into a text file <code class="docutils literal notranslate"><span class="pre">output_test_ode.txt</span></code> depending on which folder the program has been called.</p>
+<p>The results can be quite different depending on the used time-stepping method. Available time-stepping methods are:</p>
+<ul class="simple">
+<li><p>ExplicitEuler</p></li>
+<li><p>ImplicitEuler</p></li>
+<li><p>ImprovedEuler</p></li>
+<li><p>RungeKutta</p></li>
+<li><p>ExplicitRungeKutta</p></li>
+<li><p>ImplicitRungeKutta</p></li>
+<li><p>CrankNicolson</p></li>
+</ul>
+<p>To evaluate the contents of the text file, a python script called <code class="docutils literal notranslate"><span class="pre">plotmassspring.py</span></code> can be called. This script loads the contents and generates two plots containing the simulation data.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>./plotmassspring.py
+</pre></div>
+</div>
 </section>
-<section id="available-time-stepping-methods-are">
-<h2>Available time-stepping methods are<a class="headerlink" href="#available-time-stepping-methods-are" title="Link to this heading">#</a></h2>
-<p>…</p>
-</section>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -440,6 +444,15 @@ make
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="right-next"
+       href="mass_spring.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Mass Spring System</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -457,7 +470,6 @@ make
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-time-stepping-methods-are">Available time-stepping methods are</a></li>
 </ul>
   </nav></div>
 
@@ -472,7 +484,7 @@ make
   <div class="footer-item">
     
 <p class="component-author">
-By Joe Smith
+By R. Schumach, F. Dötzl, A. Zekmaro
 </p>
 
   </div>
@@ -482,7 +494,7 @@ By Joe Smith
 
   <p class="copyright">
     
-      © Copyright 2025.
+      © Copyright 2026.
       <br/>
     
   </p>
