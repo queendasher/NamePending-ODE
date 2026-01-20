@@ -25,145 +25,196 @@ namespace ASC_ode
   auto derivative (T v, size_t /*index*/) { return T(0); } 
 
 
-  template <size_t N, typename T = double>
+  template <typename T = double>
   class AutoDiff
   {
   private:
     T m_val;
-    std::array<T, N> m_deriv;
+    std::vector<T> m_deriv;
   public: 
-    AutoDiff () : m_val(0), m_deriv{} {}
-    AutoDiff (T v) : m_val(v), m_deriv{} 
+    AutoDiff () : m_val(0), m_deriv() {}
+    AutoDiff (T v, size_t n=0) : m_val(v), m_deriv(n, T(0)) {}
+
+    AutoDiff(T v, size_t id, size_t n) : m_val(v), m_deriv(n, T(0))
     {
-      for (size_t i = 0; i < N; i++)
-        m_deriv[i] = derivative(v, i);
-    }
-    
-    template <size_t I>
-    AutoDiff (Variable<I, T> var) : m_val(var.value()), m_deriv{} 
-    {
-      m_deriv[I] = 1.0;
+        if (id < n)
+            m_deriv[id] = T(1);
     }
 
     T value() const { return m_val; }
-    std::array<T, N>& deriv() { return m_deriv; }
-    const std::array<T, N>& deriv() const { return m_deriv; }
+    std::vector<T>& deriv() { return m_deriv; }
+    const std::vector<T>& deriv() const { return m_deriv; }
+    size_t size() const { return m_deriv.size(); }
+    void resize(size_t n) { m_deriv.resize(n, T(0)); }
   };
 
 
-  template <size_t N, typename T = double>
-  auto derivative (AutoDiff<N, T> v, size_t index) 
+  template <typename T = double>
+  auto derivative (AutoDiff<T> v, size_t index) 
   {
-    return v.deriv()[index];
+    return (index < v.deriv().size()) ? v.deriv()[index] : T(0);
   }
 
-
-
-  template <size_t N, typename T>
-  std::ostream & operator<< (std::ostream& os, const AutoDiff<N, T>& ad)
+  template <typename T>
+  std::ostream & operator<< (std::ostream& os, const AutoDiff<T>& ad)
   {
     os << "Value: " << ad.value() << ", Deriv: [";
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < ad.size(); ++i)
     {
       os << ad.deriv()[i];
-      if (i < N - 1) os << ", ";
+      if (i < ad.size() - 1) os << ", ";
     }
     os << "]";
     return os;
   }
 
-  template <size_t N, typename T = double>
-  AutoDiff<N, T> operator+ (const AutoDiff<N, T>& a, const AutoDiff<N, T>& b)
+  template <typename T>
+  size_t maxSize(const AutoDiff<T>& a, const AutoDiff<T>& b)
   {
-     AutoDiff<N, T> result(a.value() + b.value());
-     for (size_t i = 0; i < N; i++)
-        result.deriv()[i] = a.deriv()[i] + b.deriv()[i];
-       return result;
-   }
+      return std::max(a.size(), b.size());
+  }
 
-   template <size_t N, typename T = double>
-   auto operator+ (T a, const AutoDiff<N, T>& b) { return AutoDiff<N, T>(a) + b; }
-  
-   template <size_t N, typename T = double>
-   auto operator- (const AutoDiff<N, T>& a, const AutoDiff<N, T>& b)
-   {
-       AutoDiff<N, T> result(a.value() - b.value());
-       for (size_t i = 0; i < N; i++)
-          result.deriv()[i] = a.deriv()[i] - b.deriv()[i];
-       return result;
-   }
-
-   template <size_t N, typename T = double>
-   auto operator- (T a, const AutoDiff<N, T>& b) { return AutoDiff<N, T>(a) - b; }
-
-
-   template <size_t N, typename T = double>
-   AutoDiff<N, T> operator* (const AutoDiff<N, T>& a, const AutoDiff<N, T>& b)
-   {
-       AutoDiff<N, T> result(a.value() * b.value());
-       for (size_t i = 0; i < N; i++)
-          result.deriv()[i] = a.deriv()[i] * b.value() + a.value() * b.deriv()[i];
-       return result;
-   }
-   
-   template <size_t N, typename T = double>
-   auto operator* (T a, const AutoDiff<N, T>& b) { return AutoDiff<N, T>(a) * b; }
-
-
-
-    template <size_t N, typename T = double>
-    AutoDiff<N, T> operator/ (const AutoDiff<N, T>& a, const AutoDiff<N, T>& b)
+  template <typename T = double>
+    AutoDiff<T> operator+ (const AutoDiff<T>& a, const AutoDiff<T>& b)
     {
-        AutoDiff<N, T> result(a.value() / b.value());
-        for (size_t i = 0; i < N; i++)
-           result.deriv()[i] = (a.deriv()[i] * b.value() - a.value() * b.deriv()[i]) / (b.value() * b.value());
+    size_t n = maxSize(a, b);
+        AutoDiff<T> result(a.value() + b.value());
+        for (size_t i = 0; i < n; ++i)
+        result.deriv()[i] = derivative(a, i) + derivative(b, i);
         return result;
     }
 
-   using std::sin;
-   using std::cos;
-   using std::exp;
-   using std::log;
+    template <typename T = double>
+    auto operator+ (T a, const AutoDiff<T>& b) { return AutoDiff<T>(a, b.size()) + b; }
 
-   template <size_t N, typename T = double>
-   AutoDiff<N, T> sin(const AutoDiff<N, T> &a)
-   {
-       AutoDiff<N, T> result(sin(a.value()));
-       for (size_t i = 0; i < N; i++)
-           result.deriv()[i] = cos(a.value()) * a.deriv()[i];
-       return result;
-   }
-   
-   template <size_t N, typename T = double>
-   AutoDiff<N, T> cos(const AutoDiff<N, T> &a)
-   {
-       AutoDiff<N, T> result(cos(a.value()));
-       for (size_t i = 0; i < N; i++)
-           result.deriv()[i] = -sin(a.value()) * a.deriv()[i];
-       return result;
-   }
-   
-   template <size_t N, typename T = double>
-   AutoDiff<N, T> exp(const AutoDiff<N, T> &a)
-   {
-       AutoDiff<N, T> result(exp(a.value()));
-       for (size_t i = 0; i < N; i++)
-           result.deriv()[i] = exp(a.value()) * a.deriv()[i];
-       return result;
-   }
+    template <typename T = double>
+    auto operator+ (const AutoDiff<T>& a, T b) { return a + AutoDiff<T>(b, a.size()); }
 
-   template <size_t N, typename T = double>
-   AutoDiff<N, T> log(const AutoDiff<N, T> &a)
-   {
-       AutoDiff<N, T> result(log(a.value()));
-       for (size_t i = 0; i < N; i++)
-           result.deriv()[i] = (1 / a.value()) * a.deriv()[i];
-       return result;
-   }
+    template <typename T = double>
+    auto operator+= (AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        a = a + b;
+        return a;
+    }
 
+    template <typename T = double>
+    auto operator- (const AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        AutoDiff<T> result(a.value() - b.value());
+        for (size_t i = 0; i < maxSize(a, b); ++i)
+            result.deriv()[i] = derivative(a, i) - derivative(b, i);
+        return result;
+    }
 
+    template <typename T = double>
+    auto operator- (T a, const AutoDiff<T>& b) { return AutoDiff<T>(a, b.size()) - b; }
 
+    template <typename T = double>
+    auto operator- (const AutoDiff<T>& a, T b) { return a - AutoDiff<T>(b, a.size()); }
 
+    template <typename T = double>
+    auto operator-= (AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        a = a - b;
+        return a;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> operator* (const AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        size_t n = maxSize(a, b);
+        AutoDiff<T> result(a.value() * b.value(), n);
+        for (size_t i = 0; i < n; ++i)
+            result.deriv()[i] = derivative(a, i) * b.value() + a.value() * derivative(b, i);
+        return result;
+    }
+
+    template <typename T = double>
+    auto operator* (T a, const AutoDiff<T>& b) { return AutoDiff<T>(a, b.size()) * b; }
+
+    template <typename T = double>
+    auto operator* (const AutoDiff<T>& a, T b) { return a * AutoDiff<T>(b, a.size()); }
+
+    template <typename T = double>
+    auto operator*= (AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        a = a * b;
+        return a;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> operator/ (const AutoDiff<T>& a, const AutoDiff<T>& b)
+    {
+        size_t n = maxSize(a, b);
+        AutoDiff<T> result(a.value() / b.value(), n);
+        for (size_t i = 0; i < n; i++)
+            result.deriv()[i] = (derivative(a, i) * b.value() - a.value() * derivative(b, i)) / (b.value() * b.value());
+        return result;
+    }
+
+    template <typename T = double>
+    auto operator/ (T a, const AutoDiff<T>& b) { return AutoDiff<T>(a, b.size()) / b; }
+
+    template <typename T = double>
+    auto operator/ (const AutoDiff<T>& a, T b) { return a / AutoDiff<T>(b, a.size()); }
+
+    using std::sin;
+    using std::cos;
+    using std::exp;
+    using std::log;
+    using std::sqrt;
+
+    template <typename T = double>
+    AutoDiff<T> sin(const AutoDiff<T> &a)
+    {
+        AutoDiff<T> result(sin(a.value()));
+        for (size_t i = 0; i < a.size(); ++i)
+            result.deriv()[i] = cos(a.value()) * derivative(a, i);
+        return result;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> cos(const AutoDiff<T> &a)
+    {
+        AutoDiff<T> result(cos(a.value()));
+        for (size_t i = 0; i < a.size(); ++i)
+            result.deriv()[i] = -sin(a.value()) * derivative(a, i);
+        return result;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> exp(const AutoDiff<T> &a)
+    {
+        AutoDiff<T> result(exp(a.value()));
+        for (size_t i = 0; i < a.size(); ++i)
+            result.deriv()[i] = exp(a.value()) * derivative(a, i);
+        return result;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> log(const AutoDiff<T> &a)
+    {
+        AutoDiff<T> result(log(a.value()));
+        for (size_t i = 0; i < a.size(); ++i)
+            result.deriv()[i] = (1 / a.value()) * derivative(a, i);
+        return result;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> sqrt(const AutoDiff<T>& a)
+    {
+        AutoDiff<T> result(sqrt(a.value()));
+        for (size_t i = 0; i < a.size(); ++i)
+            result.deriv()[i] = (T(0.5) / sqrt(a.value())) * derivative(a, i);
+        return result;
+    }
+
+    template <typename T = double>
+    AutoDiff<T> norm2(const AutoDiff<T>& a)
+    {
+        return a * a;
+    }
+    
     template <typename T>
     void LegendrePolynomials(int n, T x, std::vector<T>& P) {
         if (n < 0) {

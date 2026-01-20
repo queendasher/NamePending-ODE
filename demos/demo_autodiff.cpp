@@ -17,13 +17,13 @@ T func1 (T x, T y)
 int main()
 {
   double x = 1, y = 2;
-  AutoDiff<2> adx = Variable<0>(x);
-  AutoDiff<2> ady = Variable<1>(y);
+  AutoDiff<> adx(x, 0, 2);
+  AutoDiff<> ady(y, 1, 2);
 
   std::cout << "adx = " << adx << std::endl;
   std::cout << "ady = " << ady << std::endl;
 
-  AutoDiff<2> prod = adx * ady;
+  AutoDiff<> prod = adx * ady;
   std::cout << "prod = " << prod << std::endl;
 
   std::cout << "func1(adx, ady) = " << func1(adx, ady) << std::endl;
@@ -35,7 +35,7 @@ int main()
 
   {
     // we can do second derivatives:
-    AutoDiff<1, AutoDiff<1>> addx{Variable<0>(2)};
+    AutoDiff<> addx(2, 0, 1);
     std::cout << "addx = " << addx << std::endl;
     // func = x*x
     // func' = 2*x
@@ -48,9 +48,9 @@ int main()
   // Evaluate and plot Legendre polynomials
   {
     static constexpr double STEP = 0.1;
-    std::vector<AutoDiff<1>> P;
+    std::vector<AutoDiff<>> P;
     for (double x = -1.0; x <= 1.0; x += STEP) {
-        AutoDiff<1> dx = Variable<0>(x);
+        AutoDiff<> dx(x, 0, 1);
         LegendrePolynomials(5, dx, P);
         std::cout << "x = " << x << ": ";
         for (size_t n = 0; n < P.size(); ++n) {

@@ -42,6 +42,11 @@ PYBIND11_MODULE(mass_spring, m) {
     {
       return Mass<3>{m, { p[0], p[1], p[2] }};
     });
+    
+    m.def("Mass", [](double m, std::array<double,3> p, std::array<double,3> v, std::array<double,3> a)
+    {
+      return Mass<3>{m, { p[0], p[1], p[2] }, { v[0], v[1], v[2] }, { a[0], a[1], a[2] }};
+    });
 
 
 
