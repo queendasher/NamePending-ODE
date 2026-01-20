@@ -4,8 +4,8 @@
 format: jb-book
 root: intro.md
 
-
-
+chapters:
+- file: mass_spring.md
 
 
 

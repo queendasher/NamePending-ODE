@@ -1,4 +1,4 @@
-# Welcome to ASC-ODE's documentation!
+# Introduction to Namepending-ODE
 
 
 ASC-ODE is is a C++ library for solving ordinary differential equations (ODEs).
@@ -6,60 +6,63 @@ The equation is defined by the right hand side function.
 ASC-ODE provides various time-steppers which may be used for odes with right hand sides
 given by a function object.
 
-A small demo for solving a mass-spring model as first order ODE
-\begin{eqnarray*}
-y_0^\prime & = & y_1 \\
-y_1^\prime & = & -\frac{k}{m} y_0
-\end{eqnarray*}
-is here:
-
-```cpp
-double tend = 4*M_PI;
-int steps = 100;
-double tau = tend/steps;
-
-Vector<> y = { 1, 0 };  // initial conditions
-shared_ptr<NonlinearFunction> rhs = std::make_shared<MassSpring>(mass, stiffness);
-  
-ExplicitEuler stepper(rhs);
-
-std::cout << 0.0 << "  " << y(0) << " " << y(1) << std::endl;
-for (int i = 0; i < steps; i++)
-  {
-     stepper.DoStep(tau, y);
-     std::cout << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
-  }
-```    
-
-The result of this simulation in phase space is shown here:
-
-```{image} pictures/massspring_phase.png
-:width: 40%
-:align: center
-```
-
-
-
+The theory can be found here: https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html
 
 ## Installation
 
-install XXX-odesolver it via git-clone:
+Install Namepending-ODE via git-clone:
 
-    git clone https://github.com/my-github-clone/my-ode-solver.git
+    git clone https://github.com/queendasher/NamePending-ODE.git
 
 
-To configure and build some tests do
 
-    cd my-ode-solver
-    mkdir build
-    cd build
-    cmake ..
-    make
-    
+For the python applications, make sure you have the necessary dependencies installed, such as 
+- Python 3.12 (or higher)
+- pybind11
+- pythreejs
+- ...
 
-## Available time-stepping methods are
-...
+They can be installed using apt on Linux:
 
+```sh
+sudo apt install python3.12
+sudo apt install python3-pybind11
+``` 
+
+To build the library, navigate to the `src` folder and execute the following commands:
+
+```sh
+mkdir build
+cd build
+cmake .. 
+make
+```
+
+After the build is complete, you can run the demonstration scripts. There should be an executable named `test_odes` in the `build` directory.
+
+To run the demonstration scripts, execute the following command from the `build` directory:
+```sh
+./test_ode
+```
+
+
+This program will print the simulation results into a text file `output_test_ode.txt` depending on which folder the program has been called. 
+
+The results can be quite different depending on the used time-stepping method. Available time-stepping methods are: 
+- ExplicitEuler
+- ImplicitEuler
+- ImprovedEuler
+- RungeKutta
+- ExplicitRungeKutta
+- ImplicitRungeKutta
+- CrankNicolson
+
+
+To evaluate the contents of the text file, a python script called `plotmassspring.py` can be called. This script loads the contents and generates two plots containing the simulation data.
+
+```sh
+python3 ./plotmassspring.py
+```
 
 
 
