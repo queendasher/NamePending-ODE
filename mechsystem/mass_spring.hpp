@@ -173,7 +173,8 @@ public:
   virtual size_t dimX() const override { return D*mss.masses().size() + mss.distanceConstraints().size(); }
   virtual size_t dimF() const override{ return D*mss.masses().size() + mss.distanceConstraints().size(); }
 
-  virtual void evaluate (VectorView<double> x, VectorView<double> f) const override
+  template <typename T = double>
+  virtual void evaluate (VectorView<T> x, VectorView<T> f) const override
   {
     f = 0.0;
 
@@ -239,21 +240,21 @@ public:
   
   virtual void evaluateDeriv (VectorView<double> x, MatrixView<double> df) const override
   {
-    // TODO: exact differentiation
-    double eps = 1e-8;
-    Vector<> xl(dimX()), xr(dimX()), fl(dimF()), fr(dimF());
-    for (size_t i = 0; i < dimX(); i++)
-      {
-        xl = x;
-        xl(i) -= eps;
-        xr = x;
-        xr(i) += eps;
-        evaluate (xl, fl);
-        evaluate (xr, fr);
-        df.col(i) = 1/(2*eps) * (fr-fl);
-      }
-  }
-  
+    // Differenciation using AutoDiff Class
+    const size_t xDim = dimX();
+    const size_t fDim = dimF();
+    Vector<AutoDiff<>> fad(fDim);
+    Vector<AutoDiff<>> xad(xDim);
+
+    for (size_t i = 0; i < xDim; ++i)
+      xad(i) = AutoDiff<>(x(i), i, xDim);
+    
+    evaluate<AutoDiff<>>(xad, fad);
+
+    for (size_t i = 0; i < fDim; ++i)
+      for (size_t j = 0; j < xDim; ++j)
+        df(i, j) = derivative(fad(i), j);
+  }  
 };
 
 #endif
